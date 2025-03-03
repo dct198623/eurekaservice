@@ -175,26 +175,28 @@ sudo chown -R ubuntu:ubuntu /opt/tata/eurekaservice/Dockerfile
 撰寫 Dockerfile
 
 ```text
-# 使用 OpenJDK 21 slim 版，減少鏡像大小
+# 使用 OpenJDK 21（Alpine 版）作為基礎映像，體積較小且適合容器化部署
 FROM eclipse-temurin:21-jre-alpine
 
-# 設定工作目錄
+# 設定工作目錄為 /app
 WORKDIR /app
 
-# 將 JAR 檔案複製到容器中
+# 複製編譯後的 JAR 檔案到容器內
 COPY eurekaserver-*.jar /app/
 
-# 列出 /app/ 目錄，確認 JAR 是否成功複製
+# 確保 JAR 檔案已成功複製
 RUN ls -la /app/
 
-# 找出最新的 JAR 檔案，並建立符號連結
+# 建立指向最新 JAR 檔案的符號連結，確保一致的啟動方式
 RUN set -e && \
     latest_jar=$(ls -t /app/eurekaserver-*.jar | head -n1) && \
     echo "Latest JAR: $latest_jar" && \
-    ln -sf "$latest_jar" /app/eurekaservice.jar && \
-    echo "Created symlink to $latest_jar as eurekaservice.jar"
+    ln -sf "$latest_jar" /app/eurekaservice.jar
 
-# 設定啟動指令
+# 設定 Spring Boot 啟動的環境變數，使用 "develop" 環境
+ENV SPRING_PROFILES_ACTIVE=develop
+
+# 以 Java 啟動應用程式
 CMD ["java", "-jar", "/app/eurekaservice.jar"]
 ```
 
@@ -202,7 +204,7 @@ CMD ["java", "-jar", "/app/eurekaservice.jar"]
 
 ```shell
 cd /opt/tata/eurekaservice
-docker build -t eurekaservice .
+docker build --no-cache --progress=plain -t eurekaservice .
 ```
 
 ### **5️⃣ 啟動服務**
