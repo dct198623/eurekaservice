@@ -26,16 +26,10 @@ jobs:
         chmod +x gradlew
         ./gradlew build test
 
-    - name: Get Project Version
-      id: get-version
-      run: |
-        VERSION=$(./gradlew properties --quiet | grep '^version:' | awk '{print $2}')
-        echo "version=$VERSION" >> $GITHUB_OUTPUT
-
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: eurekaservice-jar-${{ steps.get-version.outputs.version }}
+        name: eurekaservice-jar
         path: build/libs/*.jar
 
   deploy:
@@ -45,8 +39,17 @@ jobs:
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
-        name: eurekaservice-jar-${{ needs.build.outputs.version }}
+        name: eurekaservice-jar
         path: ./artifacts
+
+    - name: Copy JAR to EC2
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        source: "./artifacts/*.jar"
+        target: "/opt/tata/eurekaservice/"
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -60,9 +63,6 @@ jobs:
           # Stop and remove existing container
           docker stop eurekaservice || true
           docker rm eurekaservice || true
-          
-          # Copy new JAR
-          scp ${{ github.workspace }}/artifacts/eurekaservice-*.jar /opt/tata/eurekaservice/
           
           # Build and run new Docker container
           docker build --no-cache --progress=plain -t eurekaservice .
