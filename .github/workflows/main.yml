@@ -40,7 +40,7 @@ jobs:
     - name: Upload JAR Artifact with Version
       uses: actions/upload-artifact@v4
       with:
-        name: eurekaservice-jar-${{ env.VERSION }}
+        name: eurekaservice-jar
         path: build/libs/*.jar
 
   deploy:
