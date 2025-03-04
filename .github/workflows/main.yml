@@ -59,11 +59,17 @@ jobs:
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
           cd /opt/tata/eurekaservice
-          
-          # Stop and remove existing container
+    
+          # 停止並刪除現有容器
           docker stop eurekaservice || true
           docker rm eurekaservice || true
-          
-          # Build and run new Docker container
-          docker build --no-cache --progress=plain -t eurekaservice .
-          docker run -d --name eurekaservice -p 8761:8761 eurekaservice
+    
+          # 檢查 JAR 是否存在
+          scp ${{ github.workspace }}/artifacts/eurekaservice-*.jar /opt/tata/eurekaservice/ || { echo "❌ SCP failed!"; exit 1; }
+          ls -lh /opt/tata/eurekaservice/ || { echo "❌ JAR file not found on EC2!"; exit 1; }
+    
+          # 構建 Docker 映像
+          docker build --no-cache --progress=plain -t eurekaservice . || { echo "❌ Docker build failed!"; exit 1; }
+    
+          # 啟動新容器
+          docker run -d --name eurekaservice -p 8761:8761 eurekaservice || { echo "❌ Docker run failed!"; exit 1; }
