@@ -37,11 +37,14 @@ jobs:
     - name: Run Tests
       run: ./gradlew test  # 執行測試
 
-    - name: Upload JAR Artifact
-      uses: actions/upload-artifact@v4  # ✅ 更新為 v4
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
       with:
-        name: spring-cloud-app-jar
-        path: build/libs/*.jar  # 上傳生成的 JAR 檔案
-
-    - name: Print Build Completion Message
-      run: echo "🎉 Build and test completed successfully!"
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USERNAME }}
+        key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        script: 
+          cd /opt/tata/eurekaservice/
+          wget ${{ steps.upload-artifact.outputs.artifact-url }}
+          docker build --no-cache --progress=plain -t eurekaservice .
+          docker run -di --name=eurekaservice -p 8761:8761 eurekaservice
