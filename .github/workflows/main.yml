@@ -1,5 +1,4 @@
 name: Deploy to EC2
-
 on:
   push:
     branches:
@@ -12,12 +11,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0  
 
     - name: Set up JDK 21
       uses: actions/setup-java@v4
@@ -25,37 +21,32 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Grant execute permission to Gradle wrapper
-      run: chmod +x gradlew
+    - name: Build and Test Project
+      run: |
+        chmod +x gradlew
+        ./gradlew build test
 
-    - name: Build Project
-      run: ./gradlew build 
+    - name: Get Project Version
+      id: get-version
+      run: |
+        VERSION=$(./gradlew properties --quiet | grep '^version:' | awk '{print $2}')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
 
-    - name: Run Tests
-      run: ./gradlew test  
-
-    - name: Get Gradle Version
-      run: echo "VERSION=$(./gradlew properties --quiet | grep '^version:' | awk '{print $2}')" >> $GITHUB_ENV
-
-    - name: Upload JAR Artifact with Version
+    - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: eurekaservice-jar
+        name: eurekaservice-jar-${{ steps.get-version.outputs.version }}
         path: build/libs/*.jar
 
   deploy:
     needs: build
     runs-on: ubuntu-latest
-
     steps:
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
-        name: eurekaservice-jar-${{ env.VERSION }}
+        name: eurekaservice-jar-${{ needs.build.outputs.version }}
         path: ./artifacts
-
-    - name: List downloaded files
-      run: ls -lR ./artifacts  # 確保檔案有下載
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@master
@@ -64,24 +55,15 @@ jobs:
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         script: |
-          set -e
-          cd /opt/tata/eurekaservice/
-
-          # 停止並移除舊容器
+          cd /opt/tata/eurekaservice
+          
+          # Stop and remove existing container
           docker stop eurekaservice || true
           docker rm eurekaservice || true
-
-          # 確保檔案存在
-          ls -l ./artifacts
-
-          # 複製新的 JAR
-          scp ./artifacts/eurekaservice-*.jar ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/opt/tata/eurekaservice/
-
-          # 建立新的 Docker Image
-          docker build --no-cache -t eurekaservice .
-
-          # 啟動新容器
-          docker run -di --name=eurekaservice -p 8761:8761 eurekaservice
-
-          # 查看 Log
-          docker logs -f --tail 1000 eurekaservice
+          
+          # Copy new JAR
+          scp ${{ github.workspace }}/artifacts/eurekaservice-*.jar /opt/tata/eurekaservice/
+          
+          # Build and run new Docker container
+          docker build -t eurekaservice .
+          docker run -d --name eurekaservice -p 8761:8761 eurekaservice
