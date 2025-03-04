@@ -28,6 +28,9 @@ jobs:
     - name: Verify Project Structure
       run: ls -al  # 確保 `pom.xml` 或 `build.gradle.kts` 存在
 
+    - name: Grant execute permission to Gradle wrapper
+      run: chmod +x gradlew
+
     - name: Build Project
       run: ./gradlew build  # Kotlin 預設使用 Gradle
 
