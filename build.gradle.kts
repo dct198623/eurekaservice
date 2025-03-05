@@ -47,6 +47,12 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-tasks.withType<Jar> {
-    archiveFileName.set("${project.name}-${project.version}.jar")
+// 禁用標準 jar 任務
+tasks.jar {
+    enabled = false
+}
+
+// 保持 bootJar 任務可用
+tasks.bootJar {
+    enabled = true
 }
