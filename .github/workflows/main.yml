@@ -20,12 +20,6 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
     
-    - name: Get Project Version
-      id: get_version
-      run: |
-        VERSION=$(./gradlew properties --no-daemon --console=plain | grep "^version:" | awk '{print $2}')
-        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
-    
     - name: Build and Test Project
       run: |
         chmod +x gradlew
@@ -34,7 +28,6 @@ jobs:
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: eurekaservice-${{ steps.get_version.outputs.project_version }}-jar
         path: build/libs/*.jar
 
   deploy:
@@ -50,16 +43,9 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
     
-    - name: Get Project Version
-      id: get_version
-      run: |
-        VERSION=$(./gradlew properties --no-daemon --console=plain | grep "^version:" | awk '{print $2}')
-        echo "project_version=$VERSION" >> $GITHUB_OUTPUT
-    
     - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
-        name: eurekaservice-${{ steps.get_version.outputs.project_version }}-jar
         path: ./
     
     - name: Deploy JAR to EC2
