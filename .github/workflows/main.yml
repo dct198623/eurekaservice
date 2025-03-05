@@ -46,10 +46,11 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: '21'
-    
-    - name: Download Artifact
+
+      - name: Download Artifact
       uses: actions/download-artifact@v4
       with:
+        name: eurekaservice-jar
         path: ./
     
     - name: Deploy JAR to EC2
