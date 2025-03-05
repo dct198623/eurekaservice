@@ -42,6 +42,9 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    
     - name: Get Project Version
       id: get_version
       run: |
@@ -81,24 +84,25 @@ jobs:
           
           # 檢查 Dockerfile 是否存在，如果不存在則創建
           if [ ! -f Dockerfile ]; then
-            echo "
-# 使用 OpenJDK 21（Alpine 版）作為基礎映像，體積較小且適合容器化部署
-FROM eclipse-temurin:21-jre-alpine
+            cat > Dockerfile << EOL
+			# 使用 OpenJDK 21（Alpine 版）作為基礎映像，體積較小且適合容器化部署
+			FROM eclipse-temurin:21-jre-alpine
 
-# 設定工作目錄為 /app
-WORKDIR /app
+			# 設定工作目錄為 /app
+			WORKDIR /app
 
-# 複製編譯後的 JAR 檔案到容器內
-COPY eurekaservice.jar /app/
+			# 複製編譯後的 JAR 檔案到容器內
+			COPY eurekaservice.jar /app/
 
-# 確保 JAR 檔案已成功複製
-RUN ls -la /app/
+			# 確保 JAR 檔案已成功複製
+			RUN ls -la /app/
 
-# 設定 Spring Boot 啟動的環境變數，使用 \"develop\" 環境
-ENV SPRING_PROFILES_ACTIVE=develop
+			# 設定 Spring Boot 啟動的環境變數，使用 "develop" 環境
+			ENV SPRING_PROFILES_ACTIVE=develop
 
-# 以 Java 啟動應用程式
-CMD [\"java\", \"-jar\", \"/app/eurekaservice.jar\"]" > Dockerfile
+			# 以 Java 啟動應用程式
+			CMD ["java", "-jar", "/app/eurekaservice.jar"]
+			EOL
           fi
           
           # 建立 Docker 映像
