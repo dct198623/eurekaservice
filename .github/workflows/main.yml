@@ -28,6 +28,7 @@ jobs:
     - name: Upload JAR Artifact
       uses: actions/upload-artifact@v4
       with:
+        name: eurekaservice-jar
         path: build/libs/*.jar
 
   deploy:
@@ -36,7 +37,10 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-    
+      with:
+        name: eurekaservice-jar
+        path: ./
+        
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
