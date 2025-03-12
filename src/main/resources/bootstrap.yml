@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: eurekaservice
+      profile: dev
+      uri: http://127.0.0.1:8888/configservice
+      fail-fast: true  # 如果連線失敗立即報錯
