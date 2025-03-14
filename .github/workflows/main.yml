@@ -9,6 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       CONFIG_SERVER_URI: ${{ secrets.CONFIG_SERVER_URI }}
+      SECURITY_USERNAME: ${{ secrets.SECURITY_USERNAME }}
+      SECURITY_PASSWORD: ${{ secrets.SECURITY_PASSWORD }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
