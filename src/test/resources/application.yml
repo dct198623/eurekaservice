@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    config:
+      enabled: false
+      import-check:
+        enabled: false
+    bus:
+      enabled: false
+  security:
+    user:
+      name: admin
+      password: password
+
+management:
+  health:
+    rabbit:
+      enabled: false

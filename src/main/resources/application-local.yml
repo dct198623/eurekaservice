@@ -1,0 +1,11 @@
+spring:
+  cloud:
+    config:
+      enabled: false # 本地環境不連接 Config Server
+    bus:
+      enabled: false # 本地環境不啟用 RabbitMQ Bus
+
+management:
+  health:
+    rabbit:
+      enabled: false # 本地環境無 RabbitMQ，停用健康指標
