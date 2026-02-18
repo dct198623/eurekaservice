@@ -1,11 +1,23 @@
 spring:
+  security:
+    user:
+      name: ${SECURITY_USERNAME:admin}
+      password: ${SECURITY_PASSWORD:password}
   cloud:
     config:
       enabled: false # 本地環境不連接 Config Server
     bus:
       enabled: false # 本地環境不啟用 RabbitMQ Bus
 
+eureka:
+  instance:
+    hostname: ${SERVER_HOST:127.0.0.1}
+
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health
   health:
     rabbit:
       enabled: false # 本地環境無 RabbitMQ，停用健康指標

@@ -11,16 +11,13 @@ spring:
     timeout-per-shutdown-phase: 30s
   security:
     user:
-      name: ${SECURITY_USERNAME:admin} # 身份驗證使用者名稱
-      password: ${SECURITY_PASSWORD:password} # 身份驗證密碼
+      name: ${SECURITY_USERNAME}
+      password: ${SECURITY_PASSWORD}
 
 eureka:
   instance:
-    hostname: ${SERVER_HOST:127.0.0.1} # 設定主機名稱或 IP
+    hostname: ${SERVER_HOST} # 設定主機名稱或 IP
     prefer-ip-address: true # 優先使用 IP 註冊
-    lease-renewal-interval-in-seconds: 15 # 心跳間隔（秒）
-    lease-expiration-duration-in-seconds: 45 # 服務失效時間（秒）
-    instance-id: ${spring.application.name}:${random.value}  # 增加實例唯一性
   client:
     register-with-eureka: false # 不向 Eureka 註冊自己
     fetch-registry: false # 不從 Eureka 獲取服務列表

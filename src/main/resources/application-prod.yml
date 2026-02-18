@@ -8,6 +8,6 @@ spring:
       fail-fast: true # 啟動時若無法連接配置中心，則立即失敗
   rabbitmq:
     host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
+    port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
