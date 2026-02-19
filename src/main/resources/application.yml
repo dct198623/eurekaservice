@@ -28,12 +28,6 @@ eureka:
     should-unregister-on-shutdown: false # 關閉時不嘗試取消註冊，避免 Connection refused 日誌
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ # Eureka 註冊中心 URL
-  server:
-    enable-self-preservation: true # 啟用自我保護模式
-    renewal-percent-threshold: 0.85 # 續約比例閾值
-    eviction-interval-timer-in-ms: 10000 # 服務剔除間隔（毫秒）
-    wait-time-in-ms-when-sync-empty: 5000 # 註冊表為空時不等待
-
 management:
   endpoints:
     web:
@@ -41,8 +35,5 @@ management:
         include: health,busrefresh
 
 logging:
-  level:
-    root: INFO
-    org.springframework.security: WARN
   pattern:
     console: "[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%level] [%thread] [%logger{36}] - %msg%n"
