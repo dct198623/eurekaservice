@@ -9,6 +9,10 @@ spring:
     name: eurekaservice
   lifecycle:
     timeout-per-shutdown-phase: 30s
+  cloud:
+    service-registry:
+      auto-registration:
+        enabled: false # 停用 Spring Cloud 自動服務註冊，避免 Shutdown 時推送 DOWN 狀態觸發 Connection refused
   security:
     user:
       name: ${SECURITY_USERNAME}
@@ -21,6 +25,7 @@ eureka:
   client:
     register-with-eureka: false # 不向 Eureka 註冊自己
     fetch-registry: false # 不從 Eureka 獲取服務列表
+    should-unregister-on-shutdown: false # 關閉時不嘗試取消註冊，避免 Connection refused 日誌
     service-url:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/ # Eureka 註冊中心 URL
   server:

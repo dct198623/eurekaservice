@@ -88,7 +88,7 @@ sequenceDiagram
 | `SECURITY_PASSWORD`      | 必填  | Basic Auth 密碼              |
 | `SERVER_HOST`            | 必填  | 實例對外主機位址（用於 Eureka 自我註冊）   |
 | `SERVER_PORT`            | 必填  | 服務埠號                       |
-| `SPRING_PROFILES_ACTIVE` | 必填  | 啟動環境（local / dev / prod）   |
+| `SPRING_PROFILES_ACTIVE` | 必填  | 啟動環境（local / prod）         |
 | `CONFIG_SERVER_URI`      | -   | Config Server 位址（dev/prod） |
 | `CONFIG_SERVER_USERNAME` | -   | Config Server 帳號（dev/prod） |
 | `CONFIG_SERVER_PASSWORD` | -   | Config Server 密碼（dev/prod） |
@@ -139,7 +139,7 @@ environment:
 將以下四個檔案放在同一個目錄下：
 
 ```
-/opt/tata/eurekaservice/         # Linux 範例路徑（Windows 可自訂）
+/opt/eurekaservice/               # Linux 範例路徑（Windows 可自訂）
 ├── eurekaservice.jar             # 編譯產出
 ├── Dockerfile                    # 來源：docs/docker/Dockerfile
 ├── .dockerignore                 # 來源：docs/docker/.dockerignore
